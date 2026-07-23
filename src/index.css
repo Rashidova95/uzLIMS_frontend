@@ -1,0 +1,122 @@
+:root {
+  --ink: #16211C;
+  --ink-soft: #4B564E;
+  --paper: #F6F5EF;
+  --panel: #FFFFFF;
+  --hairline: #DDD9CB;
+  --lab-teal: #0F6E56;
+  --lab-teal-deep: #0B5744;
+  --lab-teal-soft: #E1F0EA;
+  --reagent-amber: #B9791F;
+  --reagent-amber-soft: #FBF0DD;
+  --hazard-red: #A63A2E;
+  --hazard-red-soft: #FBE9E6;
+  --glass-blue: #2B6693;
+  --glass-blue-soft: #E7EFF5;
+  --slate: #6B6A5F;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+code, .mono {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ============================================
+   SIGNATURE ELEMENT — Specimen Tag
+   Namuna ID va CAS raqamlarini laboratoriya
+   yorlig'i ko'rinishida ko'rsatadi: mono shrift +
+   chap tomonda toifa rangidagi tasma.
+   ============================================ */
+.specimen-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  overflow: hidden;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.specimen-tag__tab {
+  width: 5px;
+  align-self: stretch;
+  flex-shrink: 0;
+}
+
+.specimen-tag__label {
+  padding: 5px 9px;
+  color: var(--ink);
+}
+
+.specimen-tag--teal .specimen-tag__tab   { background: var(--lab-teal); }
+.specimen-tag--amber .specimen-tag__tab  { background: var(--reagent-amber); }
+.specimen-tag--red .specimen-tag__tab    { background: var(--hazard-red); }
+.specimen-tag--blue .specimen-tag__tab   { background: var(--glass-blue); }
+.specimen-tag--slate .specimen-tag__tab  { background: var(--slate); }
+
+/* Status badges — lab yorlig'i uslubida, to'liq pilllardan ko'ra kvadratroq */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.status-chip__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Auth ekrani foni — laboratoriya "graf qog'ozi" naqshi, juda xira */
+.auth-backdrop {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--ink);
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.hairline-divider {
+  border: none;
+  border-top: 1px solid var(--hairline);
+  margin: 0;
+}
+
+.page-scroll {
+  padding: 24px 28px 40px;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #D3CFC0; border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
