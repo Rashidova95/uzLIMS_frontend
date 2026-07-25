@@ -1,0 +1,11 @@
+services:
+
+  frontend:
+    build:
+      context: .
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    container_name: chemlab_frontend
+    restart: always
+    ports:
+      - "80:80"
