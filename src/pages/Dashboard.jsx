@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Row, Col, Card, Typography, Spin, Alert, List, Progress } from 'antd';
+import { useSelector } from 'react-redux';
+import { Row, Col, Card, Typography, Spin, Alert, List, Progress, Table, Tag } from 'antd';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import dashboardService from '../features/dashboard/dashboardService';
 import chemicalService from '../features/chemicals/chemicalService';
 import EmptyState from '../components/common/EmptyState';
+import { selectUserRole } from '../features/auth/authSlice';
 
 const { Title, Text } = Typography;
 
@@ -48,10 +50,16 @@ function StatCard({ label, value, hint, accent }) {
 }
 
 export default function Dashboard() {
+  const role = useSelector(selectUserRole);
+  const canSeeExposure = role === 'admin' || role === 'chemist';
+
   const [stats, setStats] = useState(null);
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [exposure, setExposure] = useState(null);
+  const [exposureLoading, setExposureLoading] = useState(canSeeExposure);
 
   useEffect(() => {
     let mounted = true;
@@ -81,6 +89,16 @@ export default function Dashboard() {
       .finally(() => mounted && setLoading(false));
     return () => { mounted = false; };
   }, []);
+
+  useEffect(() => {
+    if (!canSeeExposure) return;
+    let mounted = true;
+    dashboardService.exposure(90)
+      .then((data) => { if (mounted) setExposure(data); })
+      .catch(() => { /* jimgina o'tkazib yuboramiz — bu qo'shimcha panel */ })
+      .finally(() => mounted && setExposureLoading(false));
+    return () => { mounted = false; };
+  }, [canSeeExposure]);
 
   if (loading) {
     return (
@@ -240,6 +258,67 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
+            </Card>
+          </Col>
+        </Row>
+      )}
+
+      {canSeeExposure && (
+        <Row style={{ marginTop: 14 }}>
+          <Col span={24}>
+            <Card
+              title="Kimyoviy ta'sir jurnali (so'nggi 90 kun)"
+              bordered
+              styles={{ body: { padding: exposureLoading || !exposure?.results?.length ? undefined : 0 } }}
+            >
+              {exposureLoading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
+                  <Spin />
+                </div>
+              ) : exposure?.results?.length ? (
+                <Table
+                  size="small"
+                  pagination={false}
+                  dataSource={exposure.results}
+                  rowKey="user_id"
+                  columns={[
+                    {
+                      title: 'Xodim',
+                      dataIndex: 'name',
+                      key: 'name',
+                      render: (name, row) => name?.trim() || row.email,
+                    },
+                    {
+                      title: 'Jami ta\'sirlar',
+                      dataIndex: 'total_exposures',
+                      key: 'total_exposures',
+                      width: 130,
+                    },
+                    {
+                      title: 'Yuqori xavfli',
+                      dataIndex: 'high_hazard_exposures',
+                      key: 'high_hazard_exposures',
+                      width: 130,
+                    },
+                    {
+                      title: 'Holat',
+                      key: 'over_threshold',
+                      width: 140,
+                      render: (_, row) =>
+                        row.over_threshold ? (
+                          <Tag color="error">Chegaradan oshgan</Tag>
+                        ) : (
+                          <Tag color="success">Normal</Tag>
+                        ),
+                    },
+                  ]}
+                />
+              ) : (
+                <EmptyState
+                  title="Ma'lumot yo'q"
+                  subtitle="Tanlangan davrda tajriba ma'lumotlari topilmadi"
+                />
+              )}
             </Card>
           </Col>
         </Row>

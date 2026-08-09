@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import AssistantWidget from '../assistant/AssistantWidget';
 import { fetchCurrentUser } from '../../features/auth/authSlice';
 
 const { Content } = Layout;
@@ -27,6 +28,7 @@ export default function AppLayout() {
           </div>
         </Content>
       </Layout>
+      <AssistantWidget />
     </Layout>
   );
 }
