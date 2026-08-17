@@ -14,8 +14,20 @@ import RoleGuard from '../components/common/RoleGuard';
 
 const { Title, Text } = Typography;
 
-const HAZARD_OPTIONS = [1, 2, 3, 4].map((n) => ({ value: n, label: `GHS ${n}` }));
-const UNIT_OPTIONS = ['g', 'mL', 'mol'].map((u) => ({ value: u, label: u }));
+const HAZARD_OPTIONS = [
+  { value: 1, label: 'Past xavf (GHS 1)' },
+  { value: 2, label: "O'rta xavf (GHS 2)" },
+  { value: 3, label: 'Yuqori xavf (GHS 3)' },
+  { value: 4, label: 'Juda yuqori xavf (GHS 4)' },
+];
+const UNIT_OPTIONS = [
+  { value: 'g', label: 'g — Gram' },
+  { value: 'kg', label: 'kg — Kilogram' },
+  { value: 'mg', label: 'mg — Milligram' },
+  { value: 'ml', label: 'ml — Millilitr' },
+  { value: 'l', label: 'l — Litr' },
+  { value: 'mol', label: 'mol — Mol' },
+];
 
 function isExpiringSoon(dateStr) {
   if (!dateStr) return false;
@@ -318,6 +330,7 @@ export default function Inventory() {
       <Table
         rowKey="id"
         columns={columns}
+        scroll={{ x: 'max-content' }}
         dataSource={data}
         loading={loading}
         pagination={{
@@ -350,6 +363,10 @@ export default function Inventory() {
 
           <Form.Item name="cas_number" label="CAS raqami" rules={[{ required: true }]}>
             <Input placeholder="7664-93-9" className="mono" />
+          </Form.Item>
+
+          <Form.Item name="formula" label="Kimyoviy formula">
+            <Input placeholder="H2SO4" className="mono" />
           </Form.Item>
 
           <Space.Compact style={{ width: '100%' }}>
