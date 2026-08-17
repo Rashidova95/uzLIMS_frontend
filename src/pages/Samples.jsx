@@ -261,6 +261,7 @@ export default function Samples() {
       <Table
         rowKey="id"
         columns={columns}
+        scroll={{ x: 'max-content' }}
         dataSource={data}
         loading={loading}
         pagination={{
@@ -293,10 +294,10 @@ export default function Samples() {
             <Form.Item name="unit" label="Birlik" rules={[{ required: true }]} style={{ width: '40%' }}>
               <Select
                 options={[
-                  { value: 'g', label: 'g' },
-                  { value: 'mL', label: 'mL' },
-                  { value: 'mg', label: 'mg' },
-                  { value: 'L', label: 'L' },
+                  { value: 'g', label: 'g — Gram' },
+                  { value: 'mg', label: 'mg — Milligram' },
+                  { value: 'ml', label: 'ml — Millilitr' },
+                  { value: 'l', label: 'l — Litr' },
                 ]}
               />
             </Form.Item>
