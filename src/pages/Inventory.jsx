@@ -201,7 +201,6 @@ export default function Inventory() {
         </div>
       ),
     },
-    { title: 'Yetkazib beruvchi', dataIndex: 'supplier', width: 140, ellipsis: true, render: (v) => v || '—' },
     {
       title: 'Miqdor',
       width: 220,
