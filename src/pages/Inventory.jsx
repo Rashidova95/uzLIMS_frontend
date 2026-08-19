@@ -119,22 +119,17 @@ export default function Inventory() {
   };
 
   const handleQuantitySave = async (id) => {
+    const { action, amount } = editingQty;
+    const numAmount = Number(amount);
+
+    if (!numAmount || numAmount <= 0) {
+      message.error("Miqdor 0 dan katta bo'lishi kerak");
+      return;
+    }
+
     try {
-      const original = data.find((d) => d.id === id);
-      const oldQty = Number(original?.quantity ?? 0);
-      const newQty = Number(editingQty.value);
-      const delta = newQty - oldQty;
-
-      if (!Number.isFinite(delta) || delta === 0) {
-        setEditingQty(null);
-        return;
-      }
-
-      const action = delta > 0 ? 'add' : 'subtract';
-      const amount = Math.abs(delta);
-
-      await chemicalService.updateQuantity(id, action, amount);
-      message.success('Miqdor yangilandi');
+      await chemicalService.updateQuantity(id, action, numAmount);
+      message.success(action === 'add' ? 'Miqdor qo\'shildi' : 'Miqdor ayirildi');
       setEditingQty(null);
       fetchData(pagination.current);
     } catch (err) {
@@ -204,19 +199,44 @@ export default function Inventory() {
     },
     {
       title: 'Miqdor',
-      width: 150,
+      width: 220,
       render: (_, r) =>
         editingQty?.id === r.id ? (
-          <Space.Compact>
-            <InputNumber
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <Segmented
               size="small"
-              autoFocus
-              value={editingQty.value}
-              onChange={(v) => setEditingQty({ id: r.id, value: v })}
-              style={{ width: 90 }}
+              value={editingQty.action}
+              onChange={(v) => setEditingQty({ ...editingQty, action: v })}
+              options={[
+                { label: "Qo'shish", value: 'add' },
+                { label: 'Ayirish', value: 'subtract' },
+              ]}
             />
-            <Button size="small" type="primary" onClick={() => handleQuantitySave(r.id)}>OK</Button>
-          </Space.Compact>
+            <Space.Compact>
+              <InputNumber
+                size="small"
+                autoFocus
+                min={0}
+                value={editingQty.amount}
+                onChange={(v) => setEditingQty({ ...editingQty, amount: v })}
+                style={{ width: 90 }}
+                placeholder={`Miqdor (${r.unit})`}
+              />
+              <Button size="small" type="primary" onClick={() => handleQuantitySave(r.id)}>OK</Button>
+              <Button size="small" onClick={() => setEditingQty(null)}>Bekor</Button>
+            </Space.Compact>
+            <Text type="secondary" style={{ fontSize: 11 }}>
+              {r.quantity} {r.unit}
+              {' → '}
+              <strong>
+                {editingQty.amount
+                  ? (editingQty.action === 'add'
+                      ? Number(r.quantity) + Number(editingQty.amount)
+                      : Number(r.quantity) - Number(editingQty.amount))
+                  : r.quantity} {r.unit}
+              </strong>
+            </Text>
+          </div>
         ) : (
           <RoleGuard allow={['admin', 'chemist']}>
             <span
@@ -226,7 +246,7 @@ export default function Inventory() {
                 color: isLowStock(r) ? 'var(--reagent-amber)' : 'inherit',
                 fontWeight: isLowStock(r) ? 600 : 400,
               }}
-              onClick={() => setEditingQty({ id: r.id, value: r.quantity })}
+              onClick={() => setEditingQty({ id: r.id, action: 'subtract', amount: null })}
             >
               {r.quantity} {r.unit}
             </span>
@@ -294,7 +314,7 @@ export default function Inventory() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 18 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <Title level={4} style={{ marginBottom: 2 }}>Inventar</Title>
           <Text type="secondary">Kimyoviy moddalar ombori</Text>

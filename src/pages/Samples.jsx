@@ -216,7 +216,7 @@ export default function Samples() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 18 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <Title level={4} style={{ marginBottom: 2 }}>Namunalar</Title>
           <Text type="secondary">Laboratoriyaga qabul qilingan barcha namunalar</Text>

@@ -252,7 +252,7 @@ export default function Users() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <Title level={3} style={{ margin: 0 }}>Foydalanuvchilar</Title>
           <Text type="secondary">Hisoblarni, rollarni va kirish huquqlarini shu yerdan boshqaring</Text>
@@ -273,6 +273,7 @@ export default function Users() {
       <Table
         rowKey="id"
         columns={columns}
+        scroll={{ x: 'max-content' }}
         dataSource={data}
         loading={loading}
         pagination={{
