@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Table, Button, Typography, Modal, Form, Input, Select, InputNumber, DatePicker,
   message, Space, Popconfirm, Tooltip, Segmented, Drawer, Descriptions,
@@ -11,6 +12,7 @@ import chemicalService from '../features/chemicals/chemicalService';
 import SpecimenTag from '../components/common/SpecimenTag';
 import HazardBadge from '../components/common/HazardBadge';
 import RoleGuard from '../components/common/RoleGuard';
+import { selectUserRole } from '../features/auth/authSlice';
 
 const { Title, Text } = Typography;
 
@@ -43,6 +45,8 @@ function isLowStock(item) {
 }
 
 export default function Inventory() {
+  const role = useSelector(selectUserRole);
+  const canEditQuantity = role === 'admin' || role === 'chemist';
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
@@ -197,6 +201,7 @@ export default function Inventory() {
         </div>
       ),
     },
+    { title: 'Yetkazib beruvchi', dataIndex: 'supplier', width: 140, ellipsis: true, render: (v) => v || '—' },
     {
       title: 'Miqdor',
       width: 220,
@@ -237,21 +242,26 @@ export default function Inventory() {
               </strong>
             </Text>
           </div>
+        ) : canEditQuantity ? (
+          <span
+            className="mono"
+            style={{
+              cursor: 'pointer',
+              color: isLowStock(r) ? 'var(--reagent-amber)' : 'inherit',
+              fontWeight: isLowStock(r) ? 600 : 400,
+            }}
+            onClick={() => setEditingQty({ id: r.id, action: 'subtract', amount: null })}
+          >
+            {r.quantity} {r.unit}
+          </span>
         ) : (
-          <RoleGuard allow={['admin', 'chemist']}>
-            <span
-              className="mono"
-              style={{
-                cursor: 'pointer',
-                color: isLowStock(r) ? 'var(--reagent-amber)' : 'inherit',
-                fontWeight: isLowStock(r) ? 600 : 400,
-              }}
-              onClick={() => setEditingQty({ id: r.id, action: 'subtract', amount: null })}
-            >
-              {r.quantity} {r.unit}
-            </span>
-          </RoleGuard>
-        ) || <span className="mono">{r.quantity} {r.unit}</span>,
+          <span
+            className="mono"
+            style={{ color: isLowStock(r) ? 'var(--reagent-amber)' : 'inherit', fontWeight: isLowStock(r) ? 600 : 400 }}
+          >
+            {r.quantity} {r.unit}
+          </span>
+        ),
     },
     {
       title: 'Xavf darajasi',
@@ -274,7 +284,6 @@ export default function Inventory() {
         );
       },
     },
-    { title: 'Yetkazib beruvchi', dataIndex: 'supplier', width: 150, ellipsis: true },
     {
       title: '',
       width: 130,
